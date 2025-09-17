@@ -79,6 +79,9 @@ class EstacionRutaServiceTest {
 		entityManager.persist(rutaEntity);
 		rutasList.add(rutaEntity);
 
+		EstacionEntity estacionEntity = factory.manufacturePojo(EstacionEntity.class);
+		entityManager.persist(estacionEntity);
+		estacionList.add(estacionEntity);
 	}
 
 	/*
@@ -91,7 +94,7 @@ class EstacionRutaServiceTest {
 	@Test
 	void testAddRuta() throws EntityNotFoundException, IllegalOperationException {
 		RutaEntity entity = rutasList.get(0);
-		EstacionEntity estacionEntity = estacionList.get(1);
+		EstacionEntity estacionEntity = estacionList.get(2);
 		RutaEntity response = estacionRutaService.addRuta(entity.getId(), estacionEntity.getId());
 
 		assertNotNull(response);
@@ -107,7 +110,7 @@ class EstacionRutaServiceTest {
 	}
 
 	@Test
-	void testAddForoInvalidEstacion() throws EntityNotFoundException, IllegalOperationException{
+	void testAddRutaInvalidEstacion() throws EntityNotFoundException, IllegalOperationException{
 		assertThrows(EntityNotFoundException.class, () -> {
 			RutaEntity entity = rutasList.get(0);
 			estacionRutaService.addRuta(entity.getId(), 0L);
@@ -115,21 +118,57 @@ class EstacionRutaServiceTest {
 	}
 
 
-	/* 
 	@Test
-	void testRemoveForo() throws EntityNotFoundException {
-		publicacionForoService.removeForo(publicacionList.get(0).getId());
-		PublicacionEntity publicacion = entityManager.find(PublicacionEntity.class, publicacionList.get(0).getId());
-		assertNull(publicacion.getForo());
-	}
-	
-
-	@Test
-	void testRemoveForoInvalidPublicacion() {
-		assertThrows(EntityNotFoundException.class, () -> {
-			publicacionForoService.removeForo(0L);
+	void testAddRutaEstacionRepetida() throws EntityNotFoundException, IllegalOperationException{
+		assertThrows(IllegalOperationException.class, () -> {
+			RutaEntity entity = rutasList.get(0);
+			EstacionEntity estacionEntity = estacionList.get(1);
+			RutaEntity response = estacionRutaService.addRuta(entity.getId(), estacionEntity.getId());
+			RutaEntity response2 = estacionRutaService.addRuta(entity.getId(), estacionEntity.getId());
 		});
 	}
-		*/
+	/*
+	 * Asegúrese de crear
+		cuatro pruebas: (1) la ruta se elimina correctamente; (2) se lanza una excepción de
+		negocio porque la estación no existe; (3) se lanza una excepción de negocio porque la ruta
+		no existe; y (4) se lanza una excepción de negocio porque la estación dada no es parte de
+		la ruta dada.
+	 */
+
+	
+	@Test
+	void testRemoveRuta() throws EntityNotFoundException, IllegalOperationException {
+		Long idRuta = rutasList.get(0).getId();
+		estacionRutaService.removeEstacionRuta(idRuta, estacionList.get(0).getId());
+		EstacionEntity estacion = entityManager.find(EstacionEntity.class, estacionList.get(0).getId());
+		
+        for (int i =0; i< estacion.getRutas().size(); i++) {
+
+            RutaEntity rutaTemp = estacion.getRutas().get(i);
+
+            assertFalse(rutaTemp.getId().equals(idRuta));
+        }
+	}
+
+	@Test
+	void testRemoveRutaInvalidEstacion() {
+		assertThrows(EntityNotFoundException.class, () -> {
+			estacionRutaService.removeEstacionRuta(rutasList.get(0).getId(), 0L );
+		});
+	}
+	
+	@Test
+	void testRemoveInvalidRuta() {
+		assertThrows(EntityNotFoundException.class, () -> {
+			estacionRutaService.removeEstacionRuta(0L, estacionList.get(0).getId() );
+		});
+	}
+
+	@Test
+	void testRemoveInvalidRutaEstacionNoAsociada() {
+		assertThrows(IllegalOperationException.class, () -> {
+			estacionRutaService.removeEstacionRuta(rutasList.get(0).getId(), estacionList.get(2).getId() );
+		});
+	}
 
 }
