@@ -24,7 +24,7 @@ public class EstacionRutaService {
     private RutaRepository rutaRepository;
 
     @Transactional
-    public EstacionEntity addEstaicon(Long rutaId, Long estacionId) throws EntityNotFoundException, IllegalOperationException{
+    public RutaEntity addRuta(Long rutaId, Long estacionId) throws EntityNotFoundException, IllegalOperationException{
         Optional<RutaEntity> rutaEntity = rutaRepository.findById(rutaId);
         if (rutaEntity.isEmpty())
             throw new EntityNotFoundException("Ruta no encontrado");
@@ -45,8 +45,9 @@ public class EstacionRutaService {
         }
 
         rutaEntityTrue.getEstaciones().add(estacionEntityTrue);
+        estacionEntityTrue.getRutas().add(rutaEntityTrue);
 
-        return estacionEntityTrue;
+        return rutaEntityTrue;
 
     }
 

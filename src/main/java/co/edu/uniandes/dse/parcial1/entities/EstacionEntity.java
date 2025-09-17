@@ -1,5 +1,6 @@
 package co.edu.uniandes.dse.parcial1.entities;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.Entity;
@@ -16,6 +17,6 @@ public class EstacionEntity extends BaseEntity {
 
     @PodamExclude
     @ManyToMany(mappedBy = "estaciones")
-    private List<RutaEntity> rutas;
+    private List<RutaEntity> rutas = new ArrayList<RutaEntity>();
 }
 
