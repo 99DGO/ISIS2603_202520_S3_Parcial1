@@ -122,9 +122,8 @@ class EstacionRutaServiceTest {
 	void testAddRutaEstacionRepetida() throws EntityNotFoundException, IllegalOperationException{
 		assertThrows(IllegalOperationException.class, () -> {
 			RutaEntity entity = rutasList.get(0);
-			EstacionEntity estacionEntity = estacionList.get(1);
+			EstacionEntity estacionEntity = estacionList.get(0);
 			RutaEntity response = estacionRutaService.addRuta(entity.getId(), estacionEntity.getId());
-			RutaEntity response2 = estacionRutaService.addRuta(entity.getId(), estacionEntity.getId());
 		});
 	}
 	/*
